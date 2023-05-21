@@ -1,8 +1,7 @@
-import {createElement} from '../render.js';
+import { createElement } from '../render.js';
 
 function createFormTemplate() {
-  return (
-    `<form class="event event--edit" action="#" method="post">
+  return `<form class="event event--edit" action="#" method="post">
     <header class="event__header">
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -161,24 +160,25 @@ function createFormTemplate() {
         </div>
       </section>
     </section>
-  </form>`
-  );
+  </form>`;
 }
 
 export default class CreateFormView {
-  getTemplate() {
+  #element = null;
+  #getTemplate() {
     return createFormTemplate();
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.#getTemplate());
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
+

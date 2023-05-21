@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import { createElement } from '../render.js';
 
 export function formatDateToHHMM(date) {
   const hours = date.getHours().toString().padStart(2, '0'); // получаем часы и форматируем строку
@@ -21,12 +21,11 @@ function createWaypointTemplate(
   offers,
   type
 ) {
-  return (
-    `<li class="trip-events__item">
+  return `<li class="trip-events__item">
     <div class="event">
       <time class="event__date" datetime="2019-03-18">${formatDateToMMDD(
-      dateFrom
-    )}</time>
+    dateFrom
+  )}</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
       </div>
@@ -34,12 +33,12 @@ function createWaypointTemplate(
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="2019-03-18T10:30">${formatDateToHHMM(
-      dateFrom
-    )}</time>
+    dateFrom
+  )}</time>
           &mdash;
           <time class="event__end-time" datetime="2019-03-18T11:00">${formatDateToHHMM(
-      dateTo
-    )}</time>
+    dateTo
+  )}</time>
         </p>
       </div>
       <p class="event__price">
@@ -48,26 +47,39 @@ function createWaypointTemplate(
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
       ${offers
-      .map(
-        (offer) =>`
+    .map(
+      (offer) => `
+          <li class="event__offer">
+            <span class="event__offer-title">${offer.title}</span>
+            &plus;&euro;&nbsp;
+            <span class="event__offer-price">${offer.price}</span>
+          </li>
+          `
+    )
+    .join('')}
         <li class="event__offer">
-          <span class="event__offer-title">${offer.title}</span>
+          <span class="event__offer-title">Order Uber</span>
           &plus;&euro;&nbsp;
-          <span class="event__offer-price">${offer.price}</span>
+          <span class="event__offer-price">20</span>
         </li>
-        `
-      )
-      .join('')}
       </ul>
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
       </button>
     </div>
-  </li>`
-  );
+  </li>`;
 }
 
 export default class WaypointView {
+
+  #element = null;
+  #basePrice = null;
+  #dateFrom = null;
+  #dateTo = null;
+  #destination = null;
+  #id = null;
+  #offers = null;
+  #type = null;
 
   constructor({
     basePrice,
@@ -78,40 +90,40 @@ export default class WaypointView {
     offers,
     type,
   }) {
-    this.basePrice = basePrice;
-    this.dateFrom = dateFrom;
-    this.dateTo = dateTo;
-    this.destination = destination;
-    this.id = id;
-    this.offers = offers;
-    this.type = type;
+    this.#basePrice = basePrice;
+    this.#dateFrom = dateFrom;
+    this.#dateTo = dateTo;
+    this.#destination = destination;
+    this.#id = id;
+    this.#offers = offers;
+    this.#type = type;
   }
 
-  getTemplate() {
+  #getTemplate() {
     return createWaypointTemplate(
-      this.base_price,
-      this.date_from,
-      this.date_to,
-      this.destination,
-      this.id,
-      this.offers,
-      this.type
+      this.#basePrice,
+      this.#dateFrom,
+      this.#dateTo,
+      this.#destination,
+      this.#id,
+      this.#offers,
+      this.#type
     );
   }
 
   get openButton() {
-    return this.getElement().querySelector('.event__rollup-btn');
+    return this.element.querySelector('.event__rollup-btn');
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.#getTemplate());
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
