@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import { createElement } from '../render.js';
 import { cities, pointTypes } from '../model/generate-trip-point-info.js';
 
 const formatDateToEdit = (date) => {
@@ -23,8 +23,7 @@ function createEditFormTemplate(
   offers,
   type
 ) {
-  return (
-    `<li class="trip-events__item">
+  return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
     <header class="event__header">
       <div class="event__type-wrapper">
@@ -39,16 +38,21 @@ function createEditFormTemplate(
             <legend class="visually-hidden">Event type</legend>
 
             ${pointTypes
-      .map((poinType) => `
+    .map((poinType) => `
+                <div class="event__type-item">
+                <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${poinType}" ${
+  poinType === type ? 'checked' : ''
+}>
+                <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">${
+  poinType[0].toUpperCase() + poinType.slice(1)
+}</label>
+              </div>`)
+    .join('')}
 
             <div class="event__type-item">
-              <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${poinType}" ${
-      poinType === type ? 'checked' : '' }>
-              <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">${
-    poinType[0].toUpperCase() + poinType.slice(1)
-    }</label>
-            </div>`)
-      .join('')}
+              <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
+              <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
+            </div>
 
             <div class="event__type-item">
               <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
@@ -95,15 +99,15 @@ function createEditFormTemplate(
 
       <div class="event__field-group  event__field-group--destination">
         <label class="event__label  event__type-output" for="event-destination-1">
-        ${type[0].toUpperCase() + type.slice(1)}
+          ${type[0].toUpperCase() + type.slice(1)}
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${
-    destination.name
-    }" list="destination-list-1">
+  destination.name
+}" list="destination-list-1">
         <datalist id="destination-list-1">
-        ${cities
-      .map((city) => `<option value="${city}">${city}</option>`)
-      .join('')}
+          ${cities
+    .map((city) => `<option value="${city}">${city}</option>`)
+    .join('')}
           <option value="Amsterdam"></option>
           <option value="Geneva"></option>
           <option value="Chamonix"></option>
@@ -113,13 +117,13 @@ function createEditFormTemplate(
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
         <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatDateToEdit(
-      dateFrom
-    )}">
+    dateFrom
+  )}">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
         <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatDateToEdit(
-      dateTo
-    )}">
+    dateTo
+  )}">
       </div>
 
       <div class="event__field-group  event__field-group--price">
@@ -140,16 +144,25 @@ function createEditFormTemplate(
       <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
         ${offers
-      .map((offer) => ` <div class="event__available-offers">
+    .map((offer) => `<div class="event__available-offers">
+            <div class="event__offer-selector">
+              <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
+              <label class="event__offer-label" for="event-offer-luggage-1">
+                <span class="event__offer-title">${offer.title}</span>
+                &plus;&euro;&nbsp;
+                <span class="event__offer-price">${offer.price}</span>
+              </label>
+            </div>`)
+    .join('')}
+        <div class="event__available-offers">
           <div class="event__offer-selector">
             <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
             <label class="event__offer-label" for="event-offer-luggage-1">
-              <span class="event__offer-title">${offer.title}</span>
+              <span class="event__offer-title">Add luggage</span>
               &plus;&euro;&nbsp;
-              <span class="event__offer-price">${offer.price}</span>
+              <span class="event__offer-price">50</span>
             </label>
-          </div>`)
-      .join('')}
+          </div>
 
           <div class="event__offer-selector">
             <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-1" type="checkbox" name="event-offer-comfort" checked>
@@ -192,16 +205,24 @@ function createEditFormTemplate(
       <section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
         <p class="event__destination-description">${
-    `${destination.name }. ${ destination.description}`
-    }</p>
+  `${destination.name }. ${ destination.description}`
+}</p>
       </section>
     </section>
   </form>
-  </li>`
-  );
+  </li>`;
 }
 
 export default class EditFormView {
+  #basePrice = null;
+  #dateFrom = null;
+  #dateTo = null;
+  #destination = null;
+  #id = null;
+  #offers = null;
+  #type = null;
+  #element = null;
+
   constructor({
     basePrice,
     dateFrom,
@@ -211,36 +232,43 @@ export default class EditFormView {
     offers,
     type,
   }) {
-    this.basePrice = basePrice;
-    this.dateFrom = dateFrom;
-    this.dateTo = dateTo;
-    this.destination = destination;
-    this.id = id;
-    this.offers = offers;
-    this.type = type;
+    this.#basePrice = basePrice;
+    this.#dateFrom = dateFrom;
+    this.#dateTo = dateTo;
+    this.#destination = destination;
+    this.#id = id;
+    this.#offers = offers;
+    this.#type = type;
   }
 
-  getTemplate() {
+  #getTemplate() {
     return createEditFormTemplate(
-      this.base_price,
-      this.date_from,
-      this.date_to,
-      this.destination,
-      this.id,
-      this.offers,
-      this.type
+      this.#basePrice,
+      this.#dateFrom,
+      this.#dateTo,
+      this.#destination,
+      this.#id,
+      this.#offers,
+      this.#type
     );
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  get submitButton() {
+    return this.element.querySelector('.event__save-btn');
+  }
 
-    return this.element;
+  get closeButton() {
+    return this.element.querySelector('.event__rollup-btn');
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.#getTemplate());
+    }
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
