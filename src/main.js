@@ -11,3 +11,4 @@ const boardPresenter = new BoardPresenter({boardContainer: pageContainer, points
 
 
 boardPresenter.init();
+// задание Революция или эволюция? (часть 2) было сделано в предыдущем задание
