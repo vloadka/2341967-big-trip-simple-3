@@ -1,4 +1,4 @@
-import {render} from './render.js';
+import {render} from './framework/render.js';
 import FiltersView from './view/filters-view.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import initialPoints from './model/generate-trip-point-info';
@@ -11,4 +11,4 @@ const boardPresenter = new BoardPresenter({boardContainer: pageContainer, points
 
 
 boardPresenter.init();
-// задание Революция или эволюция? (часть 2) было сделано в предыдущем задание
+

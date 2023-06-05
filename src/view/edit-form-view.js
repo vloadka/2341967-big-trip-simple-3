@@ -1,5 +1,7 @@
-import { createElement } from '../render.js';
+
 import { cities, pointTypes } from '../model/generate-trip-point-info.js';
+import AbstractView from '../framework/view/abstract-view.js';
+
 
 const formatDateToEdit = (date) => {
   const datenew = date.toLocaleString('en-GB', {
@@ -213,7 +215,7 @@ function createEditFormTemplate(
   </li>`;
 }
 
-export default class EditFormView {
+export default class EditFormView extends AbstractView {
   #basePrice = null;
   #dateFrom = null;
   #dateTo = null;
@@ -232,6 +234,7 @@ export default class EditFormView {
     offers,
     type,
   }) {
+    super();
     this.#basePrice = basePrice;
     this.#dateFrom = dateFrom;
     this.#dateTo = dateTo;
@@ -241,7 +244,7 @@ export default class EditFormView {
     this.#type = type;
   }
 
-  #getTemplate() {
+  get template() {
     return createEditFormTemplate(
       this.#basePrice,
       this.#dateFrom,
@@ -253,6 +256,26 @@ export default class EditFormView {
     );
   }
 
+  setSubmitHandler(callback) {
+    this._callback.submit = callback;
+    this.submitButton.addEventListener('click', this.#submitHandler);
+  }
+
+  #submitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.submit();
+  };
+
+  setCloseHandler(callback) {
+    this._callback.close = callback;
+    this.closeButton.addEventListener('click', this.#closeHandler);
+  }
+
+  #closeHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.close();
+  };
+
   get submitButton() {
     return this.element.querySelector('.event__save-btn');
   }
@@ -261,14 +284,4 @@ export default class EditFormView {
     return this.element.querySelector('.event__rollup-btn');
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.#getTemplate());
-    }
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
 }

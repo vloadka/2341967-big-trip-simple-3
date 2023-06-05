@@ -58,7 +58,7 @@ for (let i = 0; i < 7; i++) {
         name: cities[getRandomNumber(0, cities.length)],
         pictures: [],
       }),
-      id: 0,
+      id: Date.now() + i,
       offers: [
         {
           id: 0,

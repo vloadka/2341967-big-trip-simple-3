@@ -1,23 +1,15 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
+
 
 function createWaypointListTemplate() {
   return '<ul class="trip-events__list"></ul>';
 }
-export default class WaypointList {
-  #element = null;
-  #getTemplate() {
+export default class WaypointList extends AbstractView {
+  constructor() {
+    super();
+  }
+
+  get template() {
     return createWaypointListTemplate();
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.#getTemplate());
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
