@@ -11,4 +11,5 @@ const boardPresenter = new BoardPresenter({boardContainer: pageContainer, points
 
 
 boardPresenter.init();
+//задание Шаблонизируй то было сделано в предыдущем домашнем задании
 
