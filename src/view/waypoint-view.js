@@ -1,4 +1,5 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
+
 
 export function formatDateToHHMM(date) {
   const hours = date.getHours().toString().padStart(2, '0'); // получаем часы и форматируем строку
@@ -70,9 +71,7 @@ function createWaypointTemplate(
   </li>`;
 }
 
-export default class WaypointView {
-
-  #element = null;
+export default class WaypointView extends AbstractView {
   #basePrice = null;
   #dateFrom = null;
   #dateTo = null;
@@ -90,6 +89,7 @@ export default class WaypointView {
     offers,
     type,
   }) {
+    super();
     this.#basePrice = basePrice;
     this.#dateFrom = dateFrom;
     this.#dateTo = dateTo;
@@ -99,7 +99,17 @@ export default class WaypointView {
     this.#type = type;
   }
 
-  #getTemplate() {
+  setOpenHandler(callback) {
+    this._callback.open = callback;
+    this.openButton.addEventListener('click', this.#openHandler);
+  }
+
+  #openHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.open();
+  };
+
+  get template() {
     return createWaypointTemplate(
       this.#basePrice,
       this.#dateFrom,
@@ -114,16 +124,5 @@ export default class WaypointView {
   get openButton() {
     return this.element.querySelector('.event__rollup-btn');
   }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.#getTemplate());
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
 }
+
