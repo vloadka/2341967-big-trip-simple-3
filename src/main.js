@@ -10,5 +10,5 @@ const pageContainer = document.querySelector('.trip-events');
 const boardPresenter = new BoardPresenter({boardContainer: pageContainer, points: initialPoints});
 
 boardPresenter.init();
-//задание Обновление века (часть 1) было сделано в прошлом задание
+//задание Обновление века (часть 2) было сделано в прошлом задание
 
