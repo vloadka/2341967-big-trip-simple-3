@@ -1,3 +1,4 @@
+
 import { pointTypes } from '../model/generate-trip-point-info.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
@@ -50,10 +51,10 @@ function renderPictures(destination) {
 
 const renderOffers = (aviableOffers, selectedOffers) => (aviableOffers
   .map((offer) => {
-    const isOfferChecked = selectedOffers.find((el) => el.id === offer.id) ? 'checked' : '';
+    const isOfferChecked = selectedOffers.includes(offer.id) ? 'checked' : '';
     return `
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${offer.id}" type="checkbox" name="${offer.id}" ${isOfferChecked ? "checked" : ""} >
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${offer.id}" type="checkbox" name="${offer.id}" ${isOfferChecked ? 'checked' : ''} >
       <label class="event__offer-label" for="event-offer-luggage-${offer.id}">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
@@ -71,7 +72,7 @@ function createEditFormTemplate(
   }
 ) {
 
-  const destination = destinations.find((el) => el.id === point.destination?.id);
+  const destination = destinations.find((el) => el.id === point.destination);
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
     <header class="event__header">
@@ -151,7 +152,7 @@ function createEditFormTemplate(
         <p class="event__destination-description">${
   `${destination.name }. ${ destination.description}`}
       </p>
-      ${renderPictures(point.destination)}
+      ${renderPictures(destination)}
       </section>` : ''
 }
 
@@ -187,7 +188,7 @@ export default class EditFormView extends AbstractStatefulView {
     this._setState({
               ...point,
               aviableOffers: offers.find((el) => el.type === point.type).offers,
-    }),
+            }),
     this.#destinations = destinations;
     this.#offers = offers;
     this.#isEditForm = isEditForm;
@@ -205,7 +206,7 @@ export default class EditFormView extends AbstractStatefulView {
     const state = {...this._state};
     delete state.aviableOffers;
 
-    this._callback.delete();
+    this._callback.delete(state);
   };
 
   get template() {
@@ -272,6 +273,7 @@ export default class EditFormView extends AbstractStatefulView {
     });
   };
 
+
   #renderDateToPicker() {
     this.#DateToPicker = flatpickr(
       this.element.querySelector(`#event-end-time-${this._state.id}`),
@@ -311,7 +313,7 @@ export default class EditFormView extends AbstractStatefulView {
   #destinationChangeHandler = (e) => {
     e.preventDefault();
     this.updateElement({
-      destination: this.#destinations.find((destination) => destination.name === e.target.value),
+      destination: this.#destinations.find((destination) => destination.name === e.target.value).id,
     });
   };
 
@@ -324,11 +326,15 @@ export default class EditFormView extends AbstractStatefulView {
 
   #offerClickHandler = (e) => {
     e.preventDefault();
-    const selectedOffer = this._state.aviableOffers.find((offer) => String(offer.id) === e.target.name);
+    const selectedOffer = this._state.aviableOffers.find((offer) => String(offer.id) === e.target.name).id;
+    if(!selectedOffer) {
+      return;
+    }
+
     let selectedOffersNew = [...this._state.offers];
 
-    if (selectedOffersNew.find((offer) => offer.id === selectedOffer.id)) {
-      selectedOffersNew = selectedOffersNew.filter((offer) => offer.id !== selectedOffer.id);
+    if (selectedOffersNew.includes(selectedOffer)) {
+      selectedOffersNew = selectedOffersNew.filter((offer) => offer !== selectedOffer);
     } else {
       selectedOffersNew.push(selectedOffer);
     }
@@ -374,4 +380,3 @@ export default class EditFormView extends AbstractStatefulView {
     return this.element.querySelector('.event__reset-btn');
   }
 }
-

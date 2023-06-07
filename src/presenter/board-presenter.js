@@ -1,4 +1,4 @@
-
+//import CreateFormView from '../view/form-creation-view';
 import SortingView from '../view/sorting-view';
 import WaypointList from '../view/waypoint-view-list';
 import EmptyMessageView from '../view/empty-message-view';
@@ -7,12 +7,14 @@ import WaypointPresenter from './waypoint-presenter';
 import {sortingType, UpdateType, FilterType, ACTION_TYPE} from '../utils/constants.js';
 import {filter, sort} from '../utils/functions.js';
 import FormCreationPresenter from './form-creation-presenter';
+import LoadingView from '../view/loading-view';
 
 export default class BoardPresenter {
   #waypointListComponent = new WaypointList();
   #boardContainer = null;
   #points = null;
   #tripPointPresentersAll = {};
+
   #destinationModel = null;
   #offerModel = null;
   #filterModel = null;
@@ -21,9 +23,10 @@ export default class BoardPresenter {
   #currentSort = sortingType.day;
   #sortComponent = null;
   #formCreatePresenter = null;
-
+  #loadingView = new LoadingView();
   #emptyMessageComponent = null;
-
+  #isLoading = true;
+  #loadingComponent = null;
 
   constructor({ boardContainer , waypointModel, destinationModel, offerModel, filterModel, handleFormCreationDestroy}) {
     this.#boardContainer = boardContainer;
@@ -48,6 +51,7 @@ export default class BoardPresenter {
   get waypoints() {
     this.#currentFilter = this.#filterModel.filter;
     const waypoints = this.#waypointModel.waypoints;
+
     return filter( this.#currentFilter, waypoints).sort(sort(this.#currentSort));
   }
 
@@ -96,9 +100,18 @@ export default class BoardPresenter {
         this.#clearBoard({resetSortType: true});
         this.#renderBoard();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingView);
+        this.#clearBoard();
+        this.#renderBoard();
+        break;
     }
   };
 
+  #renderLoading() {
+    render(this.#loadingView, this.#boardContainer, RenderPosition.AFTERBEGIN);
+  }
 
   #renderEmptyMessageView() {
     this.#emptyMessageComponent = new EmptyMessageView();
@@ -111,6 +124,7 @@ export default class BoardPresenter {
   };
 
   #handleSortTypeChange = (sortType) => {
+
     if (this.#currentSort === sortType) {
       return;
     }
@@ -137,7 +151,6 @@ export default class BoardPresenter {
     this.#tripPointPresentersAll[waypoint.id] = presenter;
   }
 
-
   #clearBoard = ({resetSortType = false} = {}) => {
     this.#formCreatePresenter.destroy();
     Object.values(this.#tripPointPresentersAll).forEach((presenter) => presenter.destroy());
@@ -155,6 +168,11 @@ export default class BoardPresenter {
   };
 
   #renderBoard() {
+    if(this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const waypoints = this.waypoints;
     if (waypoints.length === 0) {
       this.#renderEmptyMessageView();
@@ -169,9 +187,6 @@ export default class BoardPresenter {
   }
 
   #renderWaypoints(list) {
-
     list.forEach((point) => this.#renderWaypoint(point));
-
   }
-
 }

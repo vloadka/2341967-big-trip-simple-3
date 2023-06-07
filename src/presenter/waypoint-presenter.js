@@ -14,6 +14,7 @@ export default class WaypointPresenter {
   #onWaypointChange = null;
   #destinations = null;
   #offers = null;
+
   constructor(waypointListComponent, onFormOpen, onWaypointChange) {
     this.#waypointListComponent = waypointListComponent;
     this.#isEditing = false;
@@ -32,6 +33,7 @@ export default class WaypointPresenter {
   }
 
   #formSubmitHandler = (newPoint) => {
+
     const checkIsMinor = dayjs(this.#waypoint.dateFrom).isSame( newPoint.dateFrom, 'D') || this.#waypoint.basePrice !== newPoint.basePrice;
 
     this.#onWaypointChange(
@@ -42,6 +44,7 @@ export default class WaypointPresenter {
 
     this.#replaceToPointView();
     document.removeEventListener('keydown', this.#handleEscape);
+
   };
 
   #handleEscape = (e) => {
@@ -79,7 +82,9 @@ export default class WaypointPresenter {
     const oldWaypontView = this.#waypointView;
     const oldEditPointView = this.#editPointView;
 
+
     this.#waypointView = new WaypointView(point);
+
     this.#editPointView = new EditFormView({point, destinations: this.#destinations, offers: this.#offers, isEditForm: true});
 
     this.#editPointView.setSubmitHandler(this.#formSubmitHandler);
@@ -89,7 +94,7 @@ export default class WaypointPresenter {
       this.#replaceToEditPointView();
       document.addEventListener('keydown', this.#handleEscape);
     });
-    this.#waypointView.setDeleteHandler(this.#handleDelete);
+    this.#editPointView.setDeleteHandler(this.#handleDelete);
     if (oldWaypontView === null || oldEditPointView === null) {
       render(this.#waypointView, this.#waypointListComponent);
       return;
@@ -106,6 +111,7 @@ export default class WaypointPresenter {
   }
 
   init (point, destinations, offers) {
+
     this.#waypoint = point;
     this.#destinations = destinations;
     this.#offers = offers;
@@ -118,19 +124,18 @@ export default class WaypointPresenter {
       this.#replaceToEditPointView();
       document.addEventListener('keydown', this.#handleEscape);
     });
-
     this.#editPointView = new EditFormView({point, destinations: this.#destinations,
       offers: this.#offers, isEditForm: true});
 
     this.#editPointView.setSubmitHandler(this.#formSubmitHandler);
     this.#editPointView.setDeleteHandler(this.#handleDelete);
 
+
     this.#editPointView.setCloseHandler(() => {
       this.#editPointView.reset(this.#waypoint);
       this.#replaceToPointView();
       document.body.removeEventListener('keydown', this.#handleEscape);
     });
-
     render(this.#waypointView, this.#waypointListComponent);
   }
 

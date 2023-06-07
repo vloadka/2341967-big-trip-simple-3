@@ -142,7 +142,6 @@ const descriptionVariants = [
 const generateRandomDate = (from, to) => new Date(
   from.getTime() + Math.random() * (to.getTime() - from.getTime())
 );
-
 const getRandomPictures = () => Array.from({ length: Math.floor(Math.random() * 6) + 1 }).map(() => ({
   src: `img/photos/${getRandomNumber(1, 5)}.jpg`,
   description: descriptionVariants[getRandomNumber(0, descriptionVariants.length)],
@@ -164,6 +163,7 @@ for (let i = 0; i < ALLdestinations.length; i++) {
   const type = pointTypes[getRandomNumber(0, pointTypes.length)];
 
   initialPoints.push(
+
     new Point({
       basePrice: getRandomNumber(100, 1000),
       dateFrom: date.toISOString(),
@@ -174,8 +174,8 @@ for (let i = 0; i < ALLdestinations.length; i++) {
       offers: []
     })
   );
+
 }
 
 export default initialPoints;
-
 

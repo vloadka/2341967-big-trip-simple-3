@@ -17,7 +17,7 @@ export function formatDateToMMDD(props) {
 
 function renderOffers(offersALL, selectedOffers, type) {
   const aviableOffers = offersALL.find((el) => el.type === type).offers;
-  return aviableOffers.filter((el) => selectedOffers.find((off) => off.id === el.id)).map((offer) => `
+  return aviableOffers.filter((el) => selectedOffers.find((off) => off === el.id)).map((offer) => `
     <li class="event__offer">
       <span class="event__offer-title">${offer.title}</span>
       &plus;&euro;&nbsp;
@@ -31,7 +31,7 @@ function createWaypointTemplate(
   destinations,
   offers,
 ) {
-  const destination = destinations.find((el) => el.id === waypoint.destination.id);
+  const destination = destinations.find((el) => el.id === waypoint.destination);
   return `<li class="trip-events__item">
     <div class="event">
       <time class="event__date" datetime="${waypoint.dateFrom}">${formatDateToMMDD(
@@ -102,6 +102,5 @@ export default class WaypointView extends AbstractView {
   get openButton() {
     return this.element.querySelector('.event__rollup-btn');
   }
+
 }
-
-
