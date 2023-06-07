@@ -143,6 +143,11 @@ const generateRandomDate = (from, to) => new Date(
   from.getTime() + Math.random() * (to.getTime() - from.getTime())
 );
 
+const getRandomPictures = () => Array.from({ length: Math.floor(Math.random() * 6) + 1 }).map(() => ({
+  src: `img/photos/${getRandomNumber(1, 5)}.jpg`,
+  description: descriptionVariants[getRandomNumber(0, descriptionVariants.length)],
+}));
+
 const getRandomDestination = (id, city) => new Destination({
   id: id,
   description:  descriptionVariants[getRandomNumber(0, descriptionVariants.length)],
@@ -150,10 +155,6 @@ const getRandomDestination = (id, city) => new Destination({
   pictures: getRandomPictures(),
 });
 
-const getRandomPictures = () => Array.from({ length: Math.floor(Math.random() * 6) + 1 }).map(() => ({
-  src: `img/photos/${getRandomNumber(1, 5)}.jpg`,
-  description: descriptionVariants[getRandomNumber(0, descriptionVariants.length)],
-}));
 
 const getOffersByType = (type) => ALLoffers.filter((offer) => offer.type === type).map((el) => el.offers)[0];
 
