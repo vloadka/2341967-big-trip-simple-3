@@ -2,13 +2,13 @@ import AbstractView from '../framework/view/abstract-view.js';
 import {sortingType} from '../utils/constants.js';
 
 
-function createSortingTemplate() {
+function createSortingTemplate(currentType) {
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
     ${
     Object.keys(sortingType).map((type) => `
       <div class="trip-sort__item  trip-sort__item--${type}">
-        <input id="sort-${type}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="${type}" ${type === sortingType.day ? 'checked' : ''}>
+        <input id="sort-${type}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="${type}" ${type === currentType ? 'checked' : ''}>
         <label class="trip-sort__btn" for="sort-${type}">${type[0].toUpperCase() + type.slice(1)}</label>
       </div>
       `).join('')
@@ -19,25 +19,27 @@ function createSortingTemplate() {
 
 export default class SortingView extends AbstractView {
   #currentType = sortingType.day;
-  constructor() {
+  constructor(sortType) {
     super();
+    this.#currentType = sortType;
   }
 
   subscribeOnChange(callback) {
     this._callback.change = callback;
     this.element.addEventListener('change', this.#changeHandler);
+    // Arary.from(this.#buttons).forEach(el => el.addEventListener('click', this.#changeHandler));
   }
 
-  #changeHandler = (evt) => {
-    evt.preventDefault();
+  #changeHandler = (e) => {
+    e.preventDefault();
 
-    if(this.#currentType !== evt.target.value) {
-      this._callback.change(evt.target.value);
-      this.#currentType = evt.target.value;
+    if(this.#currentType !== e.target.value) {
+      this._callback.change(e.target.value);
+      this.#currentType = e.target.value;
     }
   };
 
   get template() {
-    return createSortingTemplate();
+    return createSortingTemplate(this.#currentType);
   }
 }

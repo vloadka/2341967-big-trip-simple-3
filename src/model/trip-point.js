@@ -83,3 +83,4 @@ export class NotFoundError {
     this.message = message;
   }
 }
+
