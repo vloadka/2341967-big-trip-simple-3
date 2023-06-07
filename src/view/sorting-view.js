@@ -26,7 +26,6 @@ export default class SortingView extends AbstractView {
   subscribeOnChange(callback) {
     this._callback.change = callback;
     this.element.addEventListener('change', this.#changeHandler);
-    // Arary.from(this.#buttons).forEach(el => el.addEventListener('click', this.#changeHandler));
   }
 
   #changeHandler = (evt) => {
