@@ -8,7 +8,7 @@ export function formatDateToHHMM(date) {
 }
 
 export function formatDateToMMDD(date) {
-  const month = date.getMonth().toString().padStart(2, '0'); // получаем часы и форматируем строку
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // получаем часы и форматируем строку
   const day = date.getDate().toString().padStart(2, '0'); // получаем минуты и форматируем строку
   return `${month}.${day}`;
 }
@@ -24,9 +24,9 @@ function createWaypointTemplate(
 ) {
   return `<li class="trip-events__item">
     <div class="event">
-      <time class="event__date" datetime="2019-03-18">${formatDateToMMDD(
-    dateFrom
-  )}</time>
+      <time class="event__date" datetime="${dateFrom.toISOString()}">${formatDateToMMDD(
+  dateFrom
+)}</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
       </div>
@@ -125,4 +125,3 @@ export default class WaypointView extends AbstractView {
     return this.element.querySelector('.event__rollup-btn');
   }
 }
-
