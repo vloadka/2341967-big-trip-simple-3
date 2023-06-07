@@ -1,25 +1,37 @@
-export default class WaypointModel {
-  #ALLwaypoints = null;
-  #ALLdestinations = null;
-  #ALLoffers = null;
+import Observable from '../framework/observable';
 
-  constructor (waypoints, destinations, offers) {
-    this.#ALLwaypoints = waypoints;
-    this.#ALLdestinations = destinations;
-    this.#ALLoffers = offers;
+export default class WaypointModel extends Observable{
+
+  #waypoints = [];
+  constructor (waypoints) {
+    super();
+    this.#waypoints = waypoints;
   }
 
-  get ALLwaypoints() {
-    return this.#ALLwaypoints;
+  get waypoints() {
+    return this.#waypoints;
   }
 
+  updateWaypoint(updateType, updatedPointInfo) {
+    const index = this.#waypoints.findIndex((tripPoint) => tripPoint.id === updatedPointInfo.id);
 
-  get ALLdestinations() {
-    return this.#ALLdestinations;
+    if (index === -1) {
+      return;
+    }
+
+    this.#waypoints = this.#waypoints.slice(0, index).concat(updatedPointInfo, this.#waypoints.slice(index + 1));
+
+    this._notify(updateType, updatedPointInfo);
   }
 
-  get ALLoffers() {
-    return this.#ALLoffers;
+  addWaypoint(updateType, newPointInfo) {
+    this.#waypoints = this.#waypoints.concat(newPointInfo);
+    this._notify(updateType, newPointInfo);
   }
 
+  deleteWaypoint(updateType, deletedPointInfo) {
+    this.#waypoints = this.#waypoints.filter((el) => el.id !== deletedPointInfo.id);
+
+    this._notify(updateType);
+  }
 }

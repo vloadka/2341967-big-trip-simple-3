@@ -155,9 +155,6 @@ const getRandomDestination = (id, city) => new Destination({
   pictures: getRandomPictures(),
 });
 
-
-const getOffersByType = (type) => ALLoffers.filter((offer) => offer.type === type).map((el) => el.offers)[0];
-
 export const ALLdestinations = cities.map((el,i )=> getRandomDestination(i, el));
 
 
@@ -167,7 +164,6 @@ for (let i = 0; i < ALLdestinations.length; i++) {
   const type = pointTypes[getRandomNumber(0, pointTypes.length)];
 
   initialPoints.push(
-
     new Point({
       basePrice: getRandomNumber(100, 1000),
       dateFrom: date.toISOString(),
@@ -175,10 +171,11 @@ for (let i = 0; i < ALLdestinations.length; i++) {
       type: type,
       id: Date.now() + i,
       destination: ALLdestinations[i],
-      offers: getOffersByType(type)
+      offers: []
     })
   );
 }
 
 export default initialPoints;
+
 

@@ -1,6 +1,8 @@
 import EditFormView from '../view/edit-form-view';
 import { render, remove , replace } from '../framework/render';
 import WaypointView from '../view/waypoint-view';
+import { ACTION_TYPE , UpdateType} from '../utils/constants';
+import dayjs from 'dayjs';
 
 export default class WaypointPresenter {
   #waypointListComponent = null;
@@ -10,7 +12,8 @@ export default class WaypointPresenter {
   #waypointView = null;
   #editPointView = null;
   #onWaypointChange = null;
-
+  #destinations = null;
+  #offers = null;
   constructor(waypointListComponent, onFormOpen, onWaypointChange) {
     this.#waypointListComponent = waypointListComponent;
     this.#isEditing = false;
@@ -29,7 +32,14 @@ export default class WaypointPresenter {
   }
 
   #formSubmitHandler = (newPoint) => {
-    this.#onWaypointChange(newPoint);
+    const checkIsMinor = dayjs(this.#waypoint.dateFrom).isSame( newPoint.dateFrom, 'D') || this.#waypoint.basePrice !== newPoint.basePrice;
+
+    this.#onWaypointChange(
+      ACTION_TYPE.UPDATE_WAYPOINT,
+      checkIsMinor ? UpdateType.MINOR : UpdateType.PATCH,
+      newPoint,
+    );
+
     this.#replaceToPointView();
     document.removeEventListener('keydown', this.#handleEscape);
   };
@@ -37,10 +47,31 @@ export default class WaypointPresenter {
   #handleEscape = (e) => {
     if(e.key === 'Escape'){
       e.preventDefault();
+      this.#editPointView.reset(this.#waypoint);
       this.#replaceToPointView();
       document.removeEventListener('keydown', this.#handleEscape);
     }
   };
+
+  #handleDelete = (waypoint) => {
+    this.#onWaypointChange(
+      ACTION_TYPE.DELETE_WAYPOINT,
+      UpdateType.MINOR,
+      waypoint,
+    );
+  };
+
+  destroy() {
+    remove(this.#waypointView);
+    remove(this.#editPointView);
+  }
+
+  resetView() {
+    if (this.#isEditing) {
+      this.#editPointView.reset(this.#waypoint);
+      this.#replaceToPointView();
+    }
+  }
 
   rerender(point) {
     this.#waypoint = point;
@@ -48,10 +79,8 @@ export default class WaypointPresenter {
     const oldWaypontView = this.#waypointView;
     const oldEditPointView = this.#editPointView;
 
-
     this.#waypointView = new WaypointView(point);
-
-    this.#editPointView = new EditFormView(point);
+    this.#editPointView = new EditFormView({point, destinations: this.#destinations, offers: this.#offers, isEditForm: true});
 
     this.#editPointView.setSubmitHandler(this.#formSubmitHandler);
 
@@ -60,7 +89,7 @@ export default class WaypointPresenter {
       this.#replaceToEditPointView();
       document.addEventListener('keydown', this.#handleEscape);
     });
-
+    this.#waypointView.setDeleteHandler(this.#handleDelete);
     if (oldWaypontView === null || oldEditPointView === null) {
       render(this.#waypointView, this.#waypointListComponent);
       return;
@@ -76,13 +105,13 @@ export default class WaypointPresenter {
     remove(oldWaypontView);
   }
 
-  init (point) {
+  init (point, destinations, offers) {
     this.#waypoint = point;
+    this.#destinations = destinations;
+    this.#offers = offers;
 
-    this.#waypointView = new WaypointView(point);
-
-    this.#editPointView = new EditFormView(point);
-    this.#editPointView.setSubmitHandler(this.#formSubmitHandler);
+    this.#waypointView = new WaypointView({point, destinations: this.#destinations,
+      offers: this.#offers});
 
     this.#waypointView.setOpenHandler(() => {
       this.#onFormOpen();
@@ -90,9 +119,16 @@ export default class WaypointPresenter {
       document.addEventListener('keydown', this.#handleEscape);
     });
 
+    this.#editPointView = new EditFormView({point, destinations: this.#destinations,
+      offers: this.#offers, isEditForm: true});
+
+    this.#editPointView.setSubmitHandler(this.#formSubmitHandler);
+    this.#editPointView.setDeleteHandler(this.#handleDelete);
 
     this.#editPointView.setCloseHandler(() => {
+      this.#editPointView.reset(this.#waypoint);
       this.#replaceToPointView();
+      document.body.removeEventListener('keydown', this.#handleEscape);
     });
 
     render(this.#waypointView, this.#waypointListComponent);
