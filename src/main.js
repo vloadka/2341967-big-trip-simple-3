@@ -9,7 +9,6 @@ import NewPointButtonView from './view/new-point-button-view.js';
 const filterConteiner = document.querySelector('.trip-controls__filters');
 import WaypointApiService from './API.js';
 
-// render(new FiltersView(),filterConteiner);
 const AUTH = 'Basic bigTrip928929';
 const END_POINT = 'https://18.ecmascript.pages.academy/big-trip';
 
@@ -44,7 +43,7 @@ function handleOpenCreateForm() {
 
 filterPresenter.init();
 boardPresenter.init();
-// задание Революция или эволюция? (часть 2) было сделано в предыдущем задание
+// задание Пришёл, увидел, загрузил (часть 2) было сделано в предыдущем задание
 
 waypointModel.init()
   .finally(() => {
