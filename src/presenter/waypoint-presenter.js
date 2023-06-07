@@ -1,5 +1,5 @@
 import EditFormView from '../view/edit-form-view';
-import { render, remove } from '../framework/render';
+import { render, remove , replace } from '../framework/render';
 import WaypointView from '../view/waypoint-view';
 
 export default class WaypointPresenter {
@@ -9,22 +9,71 @@ export default class WaypointPresenter {
   #waypoint = null;
   #waypointView = null;
   #editPointView = null;
+  #onWaypointChange = null;
 
-  constructor(waypointListComponent, onFormOpen) {
+  constructor(waypointListComponent, onFormOpen, onWaypointChange) {
     this.#waypointListComponent = waypointListComponent;
     this.#isEditing = false;
-
+    this.#onWaypointChange = onWaypointChange;
     this.#onFormOpen = onFormOpen;
   }
 
   #replaceToPointView () {
+    replace(this.#waypointView, this.#editPointView);
     this.#isEditing = false;
-    this.#waypointListComponent.replaceChild(this.#waypointView.element, this.#editPointView.element);
   }
 
   #replaceToEditPointView () {
     this.#isEditing = true;
-    this.#waypointListComponent.replaceChild(this.#editPointView.element, this.#waypointView.element);
+    replace(this.#editPointView, this.#waypointView);
+  }
+
+  #formSubmitHandler = (newPoint) => {
+    this.#onWaypointChange(newPoint);
+    this.#replaceToPointView();
+    document.removeEventListener('keydown', this.#handleEscape);
+  };
+
+  #handleEscape = (e) => {
+    if(e.key === 'Escape'){
+      e.preventDefault();
+      this.#replaceToPointView();
+      document.removeEventListener('keydown', this.#handleEscape);
+    }
+  };
+
+  rerender(point) {
+    this.#waypoint = point;
+
+    const oldWaypontView = this.#waypointView;
+    const oldEditPointView = this.#editPointView;
+
+
+    this.#waypointView = new WaypointView(point);
+
+    this.#editPointView = new EditFormView(point);
+
+    this.#editPointView.setSubmitHandler(this.#formSubmitHandler);
+
+    this.#waypointView.setOpenHandler(() => {
+      this.#onFormOpen();
+      this.#replaceToEditPointView();
+      document.addEventListener('keydown', this.#handleEscape);
+    });
+
+    if (oldWaypontView === null || oldEditPointView === null) {
+      render(this.#waypointView, this.#waypointListComponent);
+      return;
+    }
+
+    if(this.#isEditing) {
+      replace(this.#editPointView, oldEditPointView);
+    } else {
+      replace(this.#waypointView, oldWaypontView);
+    }
+
+    remove(oldEditPointView);
+    remove(oldWaypontView);
   }
 
   init (point) {
@@ -33,30 +82,20 @@ export default class WaypointPresenter {
     this.#waypointView = new WaypointView(point);
 
     this.#editPointView = new EditFormView(point);
-
-    const handleEscape = (e) => {
-      if(e.key === 'Escape'){
-        e.preventDefault();
-        this.#replaceToPointView();
-        document.removeEventListener('keydown', handleEscape);
-      }
-    };
+    this.#editPointView.setSubmitHandler(this.#formSubmitHandler);
 
     this.#waypointView.setOpenHandler(() => {
       this.#onFormOpen();
       this.#replaceToEditPointView();
-      document.addEventListener('keydown', handleEscape);
+      document.addEventListener('keydown', this.#handleEscape);
     });
 
-    this.#editPointView.setSubmitHandler(() => {
-      this.#replaceToPointView();
-    });
+
     this.#editPointView.setCloseHandler(() => {
       this.#replaceToPointView();
     });
 
     render(this.#waypointView, this.#waypointListComponent);
-
   }
 
   closeForm() {

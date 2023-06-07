@@ -1,13 +1,15 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
 
-export function formatDateToHHMM(date) {
+export function formatDateToHHMM(props) {
+  const date = new Date(props);
   const hours = date.getHours().toString().padStart(2, '0'); // получаем часы и форматируем строку
   const minutes = date.getMinutes().toString().padStart(2, '0'); // получаем минуты и форматируем строку
   return `${hours}:${minutes}`;
 }
 
-export function formatDateToMMDD(date) {
+export function formatDateToMMDD(props) {
+  const date = new Date(props);
   const month = (date.getMonth() + 1).toString().padStart(2, '0'); // получаем часы и форматируем строку
   const day = date.getDate().toString().padStart(2, '0'); // получаем минуты и форматируем строку
   return `${month}.${day}`;
@@ -24,7 +26,7 @@ function createWaypointTemplate(
 ) {
   return `<li class="trip-events__item">
     <div class="event">
-      <time class="event__date" datetime="${dateFrom.toISOString()}">${formatDateToMMDD(
+      <time class="event__date" datetime="${dateFrom}">${formatDateToMMDD(
   dateFrom
 )}</time>
       <div class="event__type">
@@ -33,9 +35,9 @@ function createWaypointTemplate(
       <h3 class="event__title">${destination.name}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="2019-03-18T10:30">${formatDateToHHMM(
-    dateFrom
-  )}</time>
+          <time class="event__start-time" datetime="${dateTo}">${formatDateToHHMM(
+  dateFrom
+)}</time>
           &mdash;
           <time class="event__end-time" datetime="2019-03-18T11:00">${formatDateToHHMM(
     dateTo
@@ -58,11 +60,7 @@ function createWaypointTemplate(
           `
     )
     .join('')}
-        <li class="event__offer">
-          <span class="event__offer-title">Order Uber</span>
-          &plus;&euro;&nbsp;
-          <span class="event__offer-price">20</span>
-        </li>
+
       </ul>
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
@@ -125,3 +123,4 @@ export default class WaypointView extends AbstractView {
     return this.element.querySelector('.event__rollup-btn');
   }
 }
+

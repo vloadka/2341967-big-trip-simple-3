@@ -30,5 +30,3 @@ export default class FiltersView extends AbstractView {
   }
 
 }
-
-
