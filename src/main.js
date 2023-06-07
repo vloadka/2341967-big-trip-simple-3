@@ -10,3 +10,4 @@ const boardPresenter = new BoardPresenter({boardContainer: pageContainer, points
 
 boardPresenter.init();
 
+
