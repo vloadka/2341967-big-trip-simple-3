@@ -1,3 +1,4 @@
+
 import AbstractView from '../framework/view/abstract-view.js';
 
 function renderOneFilterTemplate(filter, selectedFilter) {
@@ -50,5 +51,5 @@ export default class FiltersView extends AbstractView{
     e.preventDefault();
     this._callback.onChange(e.target.value);
   };
-}
 
+}

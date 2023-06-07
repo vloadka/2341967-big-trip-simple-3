@@ -175,4 +175,3 @@ export default class CreateFormView extends AbstractView {
   }
 }
 
-
