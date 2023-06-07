@@ -1,5 +1,5 @@
 import EditFormView from '../view/edit-form-view';
-import { render } from '../framework/render';
+import { render, remove } from '../framework/render';
 import WaypointView from '../view/waypoint-view';
 
 export default class WaypointPresenter {
@@ -61,5 +61,10 @@ export default class WaypointPresenter {
 
   closeForm() {
     if(this.#isEditing) {this.#replaceToPointView();}
+  }
+
+  removePoint() {
+    remove(this.#waypointView);
+    remove(this.#editPointView);
   }
 }

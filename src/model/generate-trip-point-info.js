@@ -46,11 +46,14 @@ const generateRandomDate = (from, to) => new Date(
 );
 
 for (let i = 0; i < 7; i++) {
+  const date = generateRandomDate(new Date('2020-01-01T11:00'), new Date('2020-12-31T11:00'));
+  const dateTo = new Date(date.getTime() + 60 * 60 * 24 * 1000);
   initialPoints.push(
+
     new Point({
       basePrice: getRandomNumber(100, 1000),
-      dateFrom: generateRandomDate(new Date('2019-03-18T11:00'), new Date()),
-      dateTo: generateRandomDate(new Date('2019-03-18T11:00'), new Date()),
+      dateFrom: date,
+      dateTo: dateTo,
       destination: new Destination({
         id: 1,
         description:
@@ -81,3 +84,4 @@ for (let i = 0; i < 7; i++) {
 }
 
 export default initialPoints;
+
