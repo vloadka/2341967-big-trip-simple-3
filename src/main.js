@@ -12,3 +12,4 @@ const boardPresenter = new BoardPresenter({boardContainer: pageContainer, points
 boardPresenter.init();
 //задание Обновление века (часть 2) было сделано в прошлом задание
 
+
