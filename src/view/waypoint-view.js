@@ -15,51 +15,49 @@ export function formatDateToMMDD(props) {
   return `${month}.${day}`;
 }
 
+function renderOffers(offersALL, selectedOffers, type) {
+  const aviableOffers = offersALL.find((el) => el.type === type).offers;
+  return aviableOffers.filter((el) => selectedOffers.find((off) => off.id === el.id)).map((offer) => `
+    <li class="event__offer">
+      <span class="event__offer-title">${offer.title}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${offer.price}</span>
+    </li>`
+  ).join('');
+}
+
 function createWaypointTemplate(
-  basePrice,
-  dateFrom,
-  dateTo,
-  destination,
-  id,
+  waypoint,
+  destinations,
   offers,
-  type
 ) {
+  const destination = destinations.find((el) => el.id === waypoint.destination.id);
   return `<li class="trip-events__item">
     <div class="event">
-      <time class="event__date" datetime="${dateFrom}">${formatDateToMMDD(
-  dateFrom
+      <time class="event__date" datetime="${waypoint.dateFrom}">${formatDateToMMDD(
+  waypoint.dateFrom
 )}</time>
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="img/icons/${waypoint.type.toLowerCase()}.png" alt="Event type icon">
       </div>
       <h3 class="event__title">${destination.name}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="${dateTo}">${formatDateToHHMM(
-  dateFrom
+          <time class="event__start-time" datetime="${waypoint.dateTo}">${formatDateToHHMM(
+  waypoint.dateFrom
 )}</time>
           &mdash;
           <time class="event__end-time" datetime="2019-03-18T11:00">${formatDateToHHMM(
-    dateTo
+    waypoint.dateTo
   )}</time>
         </p>
       </div>
       <p class="event__price">
-        &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
+        &euro;&nbsp;<span class="event__price-value">${waypoint.basePrice}</span>
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-      ${offers
-    .map(
-      (offer) => `
-          <li class="event__offer">
-            <span class="event__offer-title">${offer.title}</span>
-            &plus;&euro;&nbsp;
-            <span class="event__offer-price">${offer.price}</span>
-          </li>
-          `
-    )
-    .join('')}
+      ${renderOffers(offers, waypoint.offers, waypoint.type)}
 
       </ul>
       <button class="event__rollup-btn" type="button">
@@ -70,31 +68,19 @@ function createWaypointTemplate(
 }
 
 export default class WaypointView extends AbstractView {
-  #basePrice = null;
-  #dateFrom = null;
-  #dateTo = null;
-  #destination = null;
-  #id = null;
+  #point = null;
+  #destinations = null;
   #offers = null;
-  #type = null;
 
   constructor({
-    basePrice,
-    dateFrom,
-    dateTo,
-    destination,
-    id,
-    offers,
-    type,
+    point,
+    destinations,
+    offers
   }) {
     super();
-    this.#basePrice = basePrice;
-    this.#dateFrom = dateFrom;
-    this.#dateTo = dateTo;
-    this.#destination = destination;
-    this.#id = id;
+    this.#point = point;
+    this.#destinations = destinations;
     this.#offers = offers;
-    this.#type = type;
   }
 
   setOpenHandler(callback) {
@@ -102,20 +88,14 @@ export default class WaypointView extends AbstractView {
     this.openButton.addEventListener('click', this.#openHandler);
   }
 
-  #openHandler = (evt) => {
-    evt.preventDefault();
+  #openHandler = (e) => {
+    e.preventDefault();
     this._callback.open();
   };
 
   get template() {
     return createWaypointTemplate(
-      this.#basePrice,
-      this.#dateFrom,
-      this.#dateTo,
-      this.#destination,
-      this.#id,
-      this.#offers,
-      this.#type
+      this.#point, this.#destinations, this.#offers
     );
   }
 
@@ -123,4 +103,5 @@ export default class WaypointView extends AbstractView {
     return this.element.querySelector('.event__rollup-btn');
   }
 }
+
 
