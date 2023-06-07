@@ -13,6 +13,7 @@ export default class WaypointModel {
     return this.#ALLwaypoints;
   }
 
+
   get ALLdestinations() {
     return this.#ALLdestinations;
   }
